@@ -1,18 +1,24 @@
-const Blessed = require('blessed');
-const Canvas = require('drawille');
+import * as Blessed from 'blessed';
+import { widget, Widgets } from 'blessed';
+// import * as Canvas from 'drawille';
+import { Canvas } from 'drawille';
+const Drawille = require('drawille');
 const Line = require('bresenham');
 
-const Term: any = Blessed.screen({
+const Term: widget.Screen = Blessed.screen({
     smartCSR: true
 });
 
-const box = Blessed.box({
-    label: ' Clock ',
+const box: widget.Box = Blessed.box({
+    label: ' Chart ',
     top: 'center',
     left: 'center',
-    width: '100%-4',
-    height: '100%-4',
-    padding: 5,
+    width: '100%-2',
+    height: '100%-2',
+    padding: {
+        left: 1,
+        right: 1
+    },
     content: '',
     tags: true,
     border: {
@@ -23,11 +29,11 @@ const box = Blessed.box({
         bg: '#263238',
         border: {
             fg: '#f0f0f0'
-        },
-        hover: {
-            fg: '#888eaa',
-            bg: '#fafafa'
         }
+        // hover: {
+        //     fg: '#888eaa',
+        //     bg: '#fafafa'
+        // }
     }
 });
 
@@ -40,21 +46,43 @@ Term.append(box);
 
 Term.render();
 
-let c = new Canvas(160, 160);
+let _width: number = (box.width as number) * 2 - 4;
+if ((box.options.padding as Widgets.Padding).left) {
+    _width -= (box.options.padding as Widgets.Padding).left * 2;
+}
+if ((box.options.padding as Widgets.Padding).right) {
+    _width -= (box.options.padding as Widgets.Padding).right * 2;
+}
+let _height: number = (box.height as number) * 4 - 8;
+if ((box.options.padding as Widgets.Padding).top) {
+    _height -= (box.options.padding as Widgets.Padding).top * 4;
+}
+if ((box.options.padding as Widgets.Padding).bottom) {
+    _height -= (box.options.padding as Widgets.Padding).bottom * 4;
+}
+
+const WIDTH: number = _width;
+const HEIGHT: number = _height;
+
+console.log(WIDTH, HEIGHT);
+
+const canvas: Canvas = new Drawille(WIDTH, HEIGHT);
+
+let a = 0;
 
 function draw() {
-    c.clear();
-    let t = new Date();
-    let sin = function(i, l) {
-        return Math.floor(Math.sin(i * 2 * Math.PI) * l + 80);
-    }, cos = function(i, l) {
-        return Math.floor(Math.cos(i * 2 * Math.PI) * l + 80);
-    };
-    Line(80, 80, sin(t.getHours() / 24, 30), 160 - cos(t.getHours() / 24, 30), c.set.bind(c));
-    Line(80, 80, sin(t.getMinutes() / 60, 50), 160 - cos(t.getMinutes() / 60, 50), c.set.bind(c));
-    Line(80, 80, sin(t.getSeconds() / 60 + ( + t % 1000) / 60000, 75), 160 - cos(t.getSeconds() / 60 + ( + t % 1000) / 60000, 75), c.set.bind(c));
-    //   process.stdout.write(c.frame());
-    box.content = c.frame();
+    canvas.clear();
+
+    for (let x = 0; x < WIDTH; x++) {
+        canvas.set(x, Math.sin((x + a) / 10) * 10 + (HEIGHT / 2 - 5));
+    }
+
+    a++;
+    if (a > WIDTH) {
+        a = 0;
+    }
+
+    box.content = canvas.frame();
     Term.render();
 }
 

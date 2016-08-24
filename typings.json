@@ -1,5 +1,6 @@
 {
   "globalDependencies": {
+    "blessed": "registry:dt/blessed#0.1.81+20160807021644",
     "node": "registry:dt/node#6.0.0+20160613154055",
     "request-promise": "registry:dt/request-promise#3.0.0+20160628092802"
   },
