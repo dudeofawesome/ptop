@@ -6,6 +6,7 @@ import { PingResult } from 'ping';
 
 import { Ping } from './pinger';
 import { Chart } from './chart';
+import { Colors } from './colors';
 
 process.title = 'ptop';
 
@@ -33,8 +34,8 @@ const latencyChartWindow: widget.Box = Blessed.box({
         type: 'line'
     },
     style: {
-        fg: '#ccd2dd',
-        bg: '#263238',
+        fg: Colors.text,
+        bg: Colors.background,
         border: {
             fg: '#f0f0f0'
         }
@@ -54,8 +55,8 @@ const latencyChartLabel: Widgets.TextElement = Blessed.text({
     content: '',
     tags: true,
     style: {
-        fg: '#ccd2dd',
-        bg: '#263238'
+        fg: Colors.text,
+        bg: Colors.background
     }
 });
 latencyChartWindow.append(latencyChartLabel);
@@ -72,8 +73,8 @@ const pingStatsWindow: widget.Box = Blessed.box({
         type: 'line'
     },
     style: {
-        fg: '#ccd2dd',
-        bg: '#263238',
+        fg: Colors.text,
+        bg: Colors.background,
         border: {
             fg: '#f0f0f0'
         }
@@ -97,8 +98,8 @@ const pingStatsLogWindow: widget.Box = Blessed.box({
         type: 'bg'
     },
     style: {
-        fg: '#ccd2dd',
-        bg: '#263238',
+        fg: Colors.text,
+        bg: Colors.background,
         border: {
             fg: '#f0f0f0'
         }
@@ -119,8 +120,8 @@ const pingStatsInfoWindow: widget.Box = Blessed.box({
         type: 'bg'
     },
     style: {
-        fg: '#ccd2dd',
-        bg: '#263238',
+        fg: Colors.text,
+        bg: Colors.background,
         border: {
             fg: '#f0f0f0'
         }
@@ -136,7 +137,7 @@ const clockWindow: Widgets.TextElement = Blessed.text({
     content: '',
     tags: true,
     style: {
-        fg: '#ccd2dd'
+        fg: Colors.text
     }
 });
 Term.append(clockWindow);
@@ -146,10 +147,10 @@ const ptopHostText: Widgets.TextElement = Blessed.text({
     left: 1,
     width: '100%-20',
     height: 1,
-    content: '{red-fg}ptop{/} for DoA-MP.local',
+    content: `{red-fg}ptop{/} for DoA-MP.local  –  Started at ${getTime()}`,
     tags: true,
     style: {
-        fg: '#ccd2dd'
+        fg: Colors.text
     }
 });
 Term.append(ptopHostText);
@@ -162,7 +163,7 @@ const ptopStatusText: Widgets.TextElement = Blessed.text({
     content: 'This is some status info on the bottom.',
     tags: true,
     style: {
-        fg: '#ccd2dd'
+        fg: Colors.text
     }
 });
 Term.append(ptopStatusText);
@@ -173,10 +174,10 @@ const ptopHintText: Widgets.TextElement = Blessed.text({
     width: '50%',
     height: 1,
     align: 'right',
-    content: 'Maybe some commands you can do?',
+    content: `{${Colors.background}-fg}{${Colors.text}-bg}dd{/} Clear history`,
     tags: true,
     style: {
-        fg: '#ccd2dd'
+        fg: Colors.text
     }
 });
 Term.append(ptopHintText);
@@ -193,13 +194,7 @@ function round (input: number, places: number = 2): number {
     return Math.round(input * Math.pow(10, places)) / Math.pow(10, places);
 }
 
-const latencyChart = new Chart(latencyChartWindow);
-
-function loop () {
-    latencyChart.clear();
-
-    latencyChartWindow.content = latencyChart.render();
-
+function getTime (): string {
     const date = new Date();
     let hours: string = date.getHours().toString();
     while (hours.length < 2) {
@@ -213,8 +208,15 @@ function loop () {
     while (seconds.length < 2) {
         seconds = `0${seconds}`;
     }
-    let time: string = `${hours}:${minutes}:${seconds}`;
-    clockWindow.content = time;
+    return `${hours}:${minutes}:${seconds}`;
+}
+
+const latencyChart = new Chart(latencyChartWindow);
+
+function loop () {
+    latencyChartWindow.content = latencyChart.render();
+
+    clockWindow.content = getTime();
 
     updateInfo();
 
@@ -228,16 +230,20 @@ let droppedPackets = 0;
 function ping () {
     totalPackets++;
     Ping().then((res) => {
-        latencyChartLabel.content = `{right}${Math.round(res.time)}ms{/right}`;
+        let color = Colors.okay;
+        if (res.time > 100) {
+            color = Colors.warning;
+        }
+        latencyChartLabel.content = `{right}{${color}-fg}${Math.round(res.time)}ms{/}`;
         latencyChart.data.splice(0, 0, res.time);
         if (res.time > 100) {
             slowPackets++;
-            pingStatsLogWindow.insertBottom(`High ping! ${res.host}: ${res.time}`);
+            pingStatsLogWindow.insertBottom(`[{${Colors.textSubdued}-fg}${getTime()}{/}] High ping! ${res.host}: ${res.time}`);
         }
     }).catch((err: PingResult) => {
         droppedPackets++;
-        latencyChartLabel.content = `{right}∞ms{/right}`;
-        pingStatsLogWindow.insertBottom(`Timeout! ${err.host}: ${err.time}`);
+        latencyChartLabel.content = `{right}{${Colors.error}-rg}∞ms{/}{/right}`;
+        pingStatsLogWindow.insertBottom(`[{${Colors.textSubdued}-fg}${getTime()}{/}] Timeout! ${err.host}: ${err.time}`);
     });
 }
 
