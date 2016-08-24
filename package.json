@@ -28,7 +28,9 @@
     "blessed": "^0.1.81",
     "bluebird": "^3.4.1",
     "bresenham": "^0.0.4",
-    "drawille": "^1.1.0"
+    "drawille": "^1.1.0",
+    "ping": "^0.2.0",
+    "source-map-support": "^0.4.2"
   },
   "devDependencies": {
     "chai": "^3.5.0",
