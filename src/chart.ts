@@ -46,8 +46,6 @@ export class Chart {
             this.height = _height;
         }
 
-        console.log(this.width, this.height);
-
         this.canvas = new Drawille(this.width, this.height);
     }
 
@@ -74,14 +72,14 @@ export class Chart {
             }
         }
 
-        this.pruneData();
+        // this.pruneData();
 
         return this.canvas.frame();
     }
 
     public pruneData () {
         if (this.width < this.data.length) {
-            this.data.splice(this.width, this.data.length - this.width);
+            this.data.splice(this.width, this.width - this.data.length);
         }
     }
 

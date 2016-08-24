@@ -1,15 +1,17 @@
 {
-  "name": "ping-monitor",
+  "name": "ptop",
   "version": "0.0.1",
   "description": "Monitor your ping and other network stats",
   "main": "build/index.js",
   "scripts": {
+    "start": "node build",
     "test": "gulp test",
-    "postinstall": "typings install"
+    "postinstall": "typings install",
+    "prepublish": "gulp build"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dudeofawesome/ping-monitor.git"
+    "url": "git+https://github.com/dudeofawesome/ptop.git"
   },
   "keywords": [
     "ping",
@@ -18,12 +20,20 @@
     "network",
     "stats"
   ],
-  "author": "Louis Orleans <louis@orleans.io> (http://orleans.io/)",
+  "preferGlobal": true,
+  "bin": {
+      "ptop": "build/index.js"
+  },
+  "author": {
+    "name": "Louis Orleans",
+    "email": "louis@orleans.io",
+    "website": "https://orleans.io/"
+  },
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/dudeofawesome/ping-monitor/issues"
+    "url": "https://github.com/dudeofawesome/ptop/issues"
   },
-  "homepage": "https://github.com/dudeofawesome/ping-monitor#readme",
+  "homepage": "https://github.com/dudeofawesome/ptop#readme",
   "dependencies": {
     "blessed": "^0.1.81",
     "bluebird": "^3.4.1",
