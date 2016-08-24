@@ -147,7 +147,7 @@ const ptopHostText: Widgets.TextElement = Blessed.text({
     left: 1,
     width: '100%-20',
     height: 1,
-    content: `{red-fg}ptop{/} for DoA-MP.local  –  Started at ${getTime()}`,
+    content: `{${Colors.primary}-fg}ptop{/} for DoA-MP.local  –  Started at ${getTime()}`,
     tags: true,
     style: {
         fg: Colors.text
@@ -185,9 +185,25 @@ Term.append(ptopHintText);
 Term.render();
 
 function updateInfo () {
-    pingStatsInfoWindow.setContent(`There have been {red-fg}${slowPackets + droppedPackets}{/} issues!`);
-    pingStatsInfoWindow.insertBottom(`{red-fg}${(round(droppedPackets / totalPackets)) * 100}%{/} have been dropped`);
-    pingStatsInfoWindow.insertBottom(`{red-fg}${(round(slowPackets / totalPackets)) * 100}%{/} have been exceedingly slow`);
+    pingStatsInfoWindow.setContent(`There have been {${Colors.primary}-fg}${slowPackets + droppedPackets}{/} issues!`);
+    const packetLoss = round(droppedPackets / totalPackets) * 100;
+    let color = Colors.okay;
+    if (packetLoss > 0.01) {
+        color = Colors.warning;
+    }
+    if (packetLoss > 0.1) {
+        color = Colors.error;
+    }
+    pingStatsInfoWindow.insertBottom(`{${color}-fg}${packetLoss}%{/} have been dropped`);
+    const packetSlow = round(slowPackets / totalPackets) * 100;
+    color = Colors.okay;
+    if (packetSlow > 0.01) {
+        color = Colors.warning;
+    }
+    if (packetSlow > 0.1) {
+        color = Colors.error;
+    }
+    pingStatsInfoWindow.insertBottom(`{${color}-fg}${packetSlow}%{/} have been exceedingly slow`);
 }
 
 function round (input: number, places: number = 2): number {
@@ -238,12 +254,12 @@ function ping () {
         latencyChart.data.splice(0, 0, res.time);
         if (res.time > 100) {
             slowPackets++;
-            pingStatsLogWindow.insertBottom(`[{${Colors.textSubdued}-fg}${getTime()}{/}] High ping! ${res.host}: ${res.time}`);
+            pingStatsLogWindow.insertBottom(`[{${Colors.textSubdued}-fg}${getTime()}{/}] {${Colors.warning}-fg}High ping!{/} ${res.host}: ${res.time}ms`);
         }
     }).catch((err: PingResult) => {
         droppedPackets++;
         latencyChartLabel.content = `{right}{${Colors.error}-rg}∞ms{/}{/right}`;
-        pingStatsLogWindow.insertBottom(`[{${Colors.textSubdued}-fg}${getTime()}{/}] Timeout! ${err.host}: ${err.time}`);
+        pingStatsLogWindow.insertBottom(`[{${Colors.textSubdued}-fg}${getTime()}{/}] {${Colors.error}-fg}Timeout!{/} ${err.host}: ${err.time ? err.time : '∞'}ms`);
     });
 }
 
