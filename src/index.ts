@@ -185,8 +185,12 @@ Term.render();
 
 function updateInfo () {
     pingStatsInfoWindow.setContent(`There have been {red-fg}${slowPackets + droppedPackets}{/} issues!`);
-    pingStatsInfoWindow.insertBottom(`{red-fg}${(droppedPackets / totalPackets) * 100}%{/} have been dropped`);
-    pingStatsInfoWindow.insertBottom(`{red-fg}${(slowPackets / totalPackets) * 100}%{/} have been exceedingly slow`);
+    pingStatsInfoWindow.insertBottom(`{red-fg}${(round(droppedPackets / totalPackets)) * 100}%{/} have been dropped`);
+    pingStatsInfoWindow.insertBottom(`{red-fg}${(round(slowPackets / totalPackets)) * 100}%{/} have been exceedingly slow`);
+}
+
+function round (input: number, places: number = 2): number {
+    return Math.round(input * Math.pow(10, places)) / Math.pow(10, places);
 }
 
 const latencyChart = new Chart(latencyChartWindow);
