@@ -79,16 +79,23 @@ gulp.task('test', () => {
         let buffer;
         try {
             buffer = fs.readFileSync(`${__dirname}/.env`);
+            const envFile = dotenv.parse(buffer);
+            env = processEnv(envFile);
         } catch (e) {
             console.log(`No .env file found`);
+            env = undefined;
         }
-        const envFile = dotenv.parse(buffer);
-        env = processEnv(envFile);
     }
-    return gulp.src(['build/**/tests/*.test.js'], {read: false})
-            .pipe(env)
-            .pipe(mocha())
-            .pipe(env.restore());
+    const gulpPipeline = gulp.src(['build/**/tests/*.test.js'], {read: false});
+    if (env) {
+        gulpPipeline.pipe(env);
+    }
+    gulpPipeline.pipe(mocha());
+    if (env) {
+        gulpPipeline.pipe(env.restore());
+    }
+
+    return gulpPipeline;
 });
 
 let Foreman;
