@@ -1,12 +1,12 @@
 {
   "name": "ptop",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Monitor your ping and other network stats",
   "main": "build/index.js",
   "scripts": {
     "start": "node build",
     "test": "gulp test",
-    "postinstall": "typings install",
+    "postinstall": "if [ \"$NPM_CONFIG_PRODUCTION\" = \"false\" ] ;then typings install; fi",
     "prepublish": "gulp build"
   },
   "repository": {
