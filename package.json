@@ -1,6 +1,6 @@
 {
   "name": "ptop",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Monitor your ping and other network stats",
   "main": "build/index.js",
   "scripts": {
