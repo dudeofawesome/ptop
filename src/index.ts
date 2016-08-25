@@ -2,6 +2,7 @@
 
 import 'source-map-support/register';
 
+import { hostname } from 'os';
 import * as Blessed from 'blessed';
 import { widget, Widgets } from 'blessed';
 import { PingResult } from 'ping';
@@ -149,7 +150,7 @@ const ptopHostText: Widgets.TextElement = Blessed.text({
     left: 1,
     width: '100%-20',
     height: 1,
-    content: `{${Colors.primary}-fg}ptop{/} for DoA-MP.local  –  Started at ${getTime()}`,
+    content: `{${Colors.primary}-fg}ptop{/} for ${hostname()}`,
     tags: true,
     style: {
         fg: Colors.text
@@ -162,7 +163,7 @@ const ptopStatusText: Widgets.TextElement = Blessed.text({
     left: 1,
     width: '50%',
     height: 1,
-    content: 'This is some status info on the bottom.',
+    content: `Started at ${getTime()}`,
     tags: true,
     style: {
         fg: Colors.text
@@ -186,6 +187,8 @@ Term.append(ptopHintText);
 
 Term.render();
 
+const startTime: number = Date.now();
+
 function updateInfo () {
     pingStatsInfoWindow.setContent(`There have been {${Colors.primary}-fg}${slowPackets + droppedPackets}{/} issues!`);
     const packetLoss = round(droppedPackets / totalPackets) * 100;
@@ -206,14 +209,15 @@ function updateInfo () {
         color = Colors.error;
     }
     pingStatsInfoWindow.insertBottom(`{${color}-fg}${packetSlow}%{/} have been exceedingly slow`);
+
+    pingStatsInfoWindow.insertBottom(`\nptop has been running for ${getTime(new Date(Date.now() - startTime - (new Date(1970, 0, 1, 1, (new Date()).getTimezoneOffset())).getTime()))}`);
 }
 
 function round (input: number, places: number = 2): number {
     return Math.round(input * Math.pow(10, places)) / Math.pow(10, places);
 }
 
-function getTime (): string {
-    const date = new Date();
+function getTime (date: Date = new Date()): string {
     let hours: string = date.getHours().toString();
     while (hours.length < 2) {
         hours = `0${hours}`;
