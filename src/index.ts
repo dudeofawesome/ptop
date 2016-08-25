@@ -25,6 +25,13 @@ Term.key(['escape', 'q', 'C-c', ':q'], function(ch, key) {
     return process.exit(0);
 });
 
+Term.key(['d'], function(ch, key) {
+    latencyChart.data.splice(0, latencyChart.data.length);
+    totalPackets = 0;
+    droppedPackets = 0;
+    slowPackets = 0;
+});
+
 const latencyChartWindow: widget.Box = Blessed.box({
     label: ' Ping Latency ',
     top: 1,
@@ -150,7 +157,7 @@ const ptopHostText: Widgets.TextElement = Blessed.text({
     left: 1,
     width: '100%-20',
     height: 1,
-    content: `{${Colors.primary}-fg}ptop{/} for ${hostname()}`,
+    content: `{${Colors.primary}-fg}ptop{/} for ${hostname()}  -  Started at ${getTime()}`,
     tags: true,
     style: {
         fg: Colors.text
@@ -158,20 +165,7 @@ const ptopHostText: Widgets.TextElement = Blessed.text({
 });
 Term.append(ptopHostText);
 
-const ptopStatusText: Widgets.TextElement = Blessed.text({
-    bottom: 0,
-    left: 1,
-    width: '50%',
-    height: 1,
-    content: `Started at ${getTime()}`,
-    tags: true,
-    style: {
-        fg: Colors.text
-    }
-});
-Term.append(ptopStatusText);
-
-const ptopHintText: Widgets.TextElement = Blessed.text({
+const ptopHintText: widget.Box = Blessed.box({
     bottom: 0,
     right: 1,
     width: '50%',
@@ -205,7 +199,7 @@ function updateInfo () {
     if (packetSlow > 0.01) {
         color = Colors.warning;
     }
-    if (packetSlow > 0.1) {
+    if (packetSlow > 1) {
         color = Colors.error;
     }
     pingStatsInfoWindow.insertBottom(`{${color}-fg}${packetSlow}%{/} have been exceedingly slow`);
@@ -265,7 +259,7 @@ function ping () {
     }).catch((err: PingResult) => {
         droppedPackets++;
         latencyChartLabel.content = `{right}{${Colors.error}-rg}∞ms{/}{/right}`;
-        pingStatsLogWindow.insertBottom(`[{${Colors.textSubdued}-fg}${getTime()}{/}] {${Colors.error}-fg}Timeout!{/} ${err.host}: ${err.time ? err.time : '∞'}ms`);
+        pingStatsLogWindow.insertBottom(`[{${Colors.textSubdued}-fg}${getTime()}{/}] {${Colors.error}-fg}Timeout!{/}   ${err.host}: ${err.time ? err.time : '∞'}ms`);
     });
 }
 
