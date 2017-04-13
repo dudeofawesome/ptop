@@ -32,7 +32,7 @@ Term.key(['d'], function(ch, key) {
     slowPackets = 0;
 });
 
-const latencyChartWindow: widget.Box = Blessed.box({
+const latencyChartWindow = Blessed.box({
     label: ' Ping Latency ',
     top: 1,
     left: 'center',
@@ -57,7 +57,7 @@ const latencyChartWindow: widget.Box = Blessed.box({
 });
 Term.append(latencyChartWindow);
 
-const latencyChartLabel: Widgets.TextElement = Blessed.text({
+const latencyChartLabel = Blessed.text({
     top: 0,
     right: 0,
     width: 5,
@@ -71,7 +71,7 @@ const latencyChartLabel: Widgets.TextElement = Blessed.text({
 });
 latencyChartWindow.append(latencyChartLabel);
 
-const pingStatsWindow: widget.Box = Blessed.box({
+const pingStatsWindow = Blessed.box({
     label: ' Statistics ',
     bottom: 1,
     left: 'center',
@@ -92,16 +92,21 @@ const pingStatsWindow: widget.Box = Blessed.box({
 });
 Term.append(pingStatsWindow);
 
-const pingStatsLogWindow: widget.Box = Blessed.box({
+const pingStatsLogWindow = Blessed.box({
     top: 0,
     left: 0,
-    width: '50%',
+    width: '50%-1',
     height: '100%-2',
     content: '',
     tags: true,
     scrollable: true,
     alwaysScroll: true,
-    scrollbar: true,
+    scrollbar: {
+      ch: '┃',
+      track: {
+        ch: '⣿'
+      }
+    },
     valign: 'bottom',
     mouse: true,
     border: {
@@ -117,7 +122,7 @@ const pingStatsLogWindow: widget.Box = Blessed.box({
 });
 pingStatsWindow.append(pingStatsLogWindow);
 
-const pingStatsInfoWindow: widget.Box = Blessed.box({
+const pingStatsInfoWindow = Blessed.box({
     top: 0,
     right: 0,
     width: '50%',
@@ -139,7 +144,7 @@ const pingStatsInfoWindow: widget.Box = Blessed.box({
 });
 pingStatsWindow.append(pingStatsInfoWindow);
 
-const clockWindow: Widgets.TextElement = Blessed.text({
+const clockWindow = Blessed.text({
     top: 0,
     right: 1,
     width: 8,
@@ -152,7 +157,7 @@ const clockWindow: Widgets.TextElement = Blessed.text({
 });
 Term.append(clockWindow);
 
-const ptopHostText: Widgets.TextElement = Blessed.text({
+const ptopHostText = Blessed.text({
     top: 0,
     left: 1,
     width: '100%-20',
@@ -165,7 +170,7 @@ const ptopHostText: Widgets.TextElement = Blessed.text({
 });
 Term.append(ptopHostText);
 
-const ptopHintText: widget.Box = Blessed.box({
+const ptopHintText = Blessed.box({
     bottom: 0,
     right: 1,
     width: '50%',
@@ -255,6 +260,9 @@ function ping () {
         if (res.time > 100) {
             slowPackets++;
             pingStatsLogWindow.insertBottom(`[{${Colors.textSubdued}-fg}${getTime()}{/}] {${Colors.warning}-fg}High ping!{/} ${res.host}: ${res.time}ms`);
+            if (pingStatsLogWindow.getScroll() >= pingStatsLogWindow.getScrollHeight() - 1) {
+              pingStatsLogWindow.resetScroll();
+            }
         }
     }).catch((err: PingResult) => {
         droppedPackets++;
