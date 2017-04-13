@@ -1,25 +1,23 @@
 {
-    "compilerOptions": {
-        "target": "ES6",
-        "module": "commonjs",
-        "moduleResolution": "node",
-        "emitDecoratorMetadata": true,
-        "declaration": true,
-        "experimentalDecorators": true,
-        "sourceMap": true
-    },
-    "filesGlob": [
-        "src/**/*.ts",
-        "!node_modules/**/*",
-        "typings/main/**/*.d.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "typings/browser",
-        "typings/browser.d.ts"
-    ],
-    "compileOnSave": false,
-    "atom": {
-        "rewriteTsconfig": false
-    }
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "declaration": true,
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "outDir": "build"
+  },
+  "include": [
+    "src/**/*.ts",
+    "!node_modules/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "compileOnSave": false,
+  "atom": {
+    "rewriteTsconfig": false
+  }
 }
